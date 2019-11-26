@@ -34,7 +34,7 @@ def int_choice_input(list=[]):
     # Loop to ensure that the option selected is valid
     while True:
             try:
-                int_choice = int(input('Enter option: '))
+                int_choice = int(input(general_input['option']))
             except ValueError:
                 print(error_text['not_int'])
                 continue
@@ -96,6 +96,13 @@ def print_items(collection_path):
     # Get the Fields and Items from the collection
     fields = get_fields(collection_path)
     items = get_items(collection_path, len(fields))
+    
+    # Add the Field POS to fields and then add the numerical
+    # position, beginning at 1, to each item.
+    fields.insert(0, 'POS')
+    
+    for x in range(0, len(items)):
+        items[x].insert(0, str(x+1))
     
     # A list to store the longest length of a value in every given field
     field_char_len = []
@@ -347,8 +354,49 @@ while exit == 0:
         print(remove_item['collection_entry'])
         print_collections(list)
         
-        # Get the collection list
+        # User Input handling
+        collection_choice = int_choice_input(list)
         
+        # Get the collection list
+        collection_path = list[collection_choice-1]
+        collection_path = collection_path[:len(collection_path)-1]
+        
+        # Ask if user wants to view the collection before selecting
+        # the item
+        view = True
+        print(remove_item['view_collection'] % collection_path)
+        if view:
+            print_items(collection_path)
+        
+        # Get the item to remove
+        item_choice = int(input(remove_item['item_entry']))
+        
+        # Get the list of items
+        fields = get_fields(collection_path)
+        items = get_items(collection_path, len(fields))
+        
+        # Remove the items
+        del items[item_choice - 1]
+        
+        # Variable to hold the text of the updated collection
+        collection_text = ''
+        
+        # Add the fields
+        collection_text += ','.join(fields)
+        collection_text += '\n'
+        
+        
+        # Add the items
+        for item in items:
+            collection_text += '\n'.join(item) + '\n'
+        
+        
+        # Write the updated collection to it's file
+        collection = open(collection_path, 'w')
+        collection.write(collection_text)
+        collection.close()
+        
+        print(remove_item['confirmation'] % collection_path[:len(collection_path)-4])
         
     else:
         print(error_text['invalid'])

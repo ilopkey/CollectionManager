@@ -6,13 +6,15 @@ collection_list_path = 'collection_list.txt'
 mloop_options = ['1: Create a new collection',
                        '2: Add a new item',
                        '3: View a collection',
+                       '4: Remove an item',
                        '9: Exit program']
 
 exit_text = 'Exiting Program\nInput ANY key to continue\n'
 
 general_input = {
     'name': 'Enter Name: ',
-    'field': 'Enter Field: '
+    'field': 'Enter Field: ',
+    'option': 'Enter Option: '
 }
 
 create_collection = {
@@ -34,7 +36,10 @@ view_collection = {
     }
     
 remove_item = {
-    'collection_entry': '\nPlease select the collection you want to remove from.\n'
+    'collection_entry': '\nPlease select the collection you want to remove from.\n',
+    'view_collection': 'Do you want to view %s? Y/n: ',
+    'item_entry': 'Please enter the POS of the item you want to remove: ',
+    'confirmation': 'Item has been removed from %s.\n'
     }
 
 error_text = {
