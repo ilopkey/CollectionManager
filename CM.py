@@ -29,18 +29,28 @@ def print_collections(list):
             print('%i: '  % i + list[i-1][:x-5])
 
 # User input handling to ensure that a collection choice is 
-# a valid integer choice from the given list.
-def int_choice_input(list=[]):
-    # Loop to ensure that the option selected is valid
+# a valid integer choice from the given list. Also usable
+# to check if the input is an interger without requiring a list.
+# Also adding possibility of passing a preselected value
+# that will be checked before attempting to request a new
+# value if the value is invalid.
+def int_choice_input(list=[], int_choice = -1):
+    # Loop to ensure that the option selected is a 
+    # integer valid
     while True:
-            try:
-                int_choice = int(input(general_input['option']))
-            except ValueError:
-                print(error_text['not_int'])
-                continue
+            if int_choice == -1:
+                try:
+                    int_choice = int(input(general_input['option']))
+                except ValueError:
+                    print(error_text['not_int'])
+                    continue
             
+            # If a list was given then check that the integer
+            # does not exceed the length of the list
+            # Then set it to -1 before reattempting the loop
             if list != [] and int_choice > len(list):
                 print(error_text['invalid'])
+                int_choice = -1
                 continue
             else:
                 break
@@ -335,8 +345,11 @@ while exit == 0:
         collection_path = list[collection_choice-1]
         collection_path = collection_path[:len(collection_path)-1]
         
+        # Check if there are any items in the collection
+        collection = open(collection_path, 'r')
+        
         # Display the name of the collection
-        print(view_collection['view_collection'] + collection_path[:len(collection_path)-4])
+        print(view_collection['view_collection'] % collection_path[:len(collection_path)-4])
         
         print_items(collection_path)
         
@@ -363,20 +376,54 @@ while exit == 0:
         
         # Ask if user wants to view the collection before selecting
         # the item
-        view = True
-        print(remove_item['view_collection'] % collection_path)
-        if view:
+        view = input(remove_item['view_collection'] % collection_path)
+        if view == 'Y' or view == 'y':
             print_items(collection_path)
-        
-        # Get the item to remove
-        item_choice = int(input(remove_item['item_entry']))
         
         # Get the list of items
         fields = get_fields(collection_path)
         items = get_items(collection_path, len(fields))
         
+        # Get a list of the items that are to be removed
+        # have user enter a non integer to exit
+        item_choice = []
+        print(remove_item['item_entry'])
+        
+        while True:
+            # Initial input
+            choice = input(remove_item['pos_entry'])
+            
+            # Attempt to convert the choice to an int 
+            try:
+                choice = int(choice)
+                
+                if choice in item_choice:
+                    print('You have already selected this item.')
+                    continue
+                
+                item_choice.append(int_choice_input(items, choice))
+                
+            except ValueError:
+                # Check if the user wants to stop entering items by 
+                # inputting finish
+                if choice.lower() == remove_item['finish_entry']:
+                    print(remove_item['confirm_entry'])
+                    break
+                else:
+                    print(error_text['invalid'])
+
+        
+        
+        # Convert the numerical choice to the actual values 
+        # that are in the items list.
+        item_choice_values = []
+        
+        for choice in item_choice:
+            item_choice_values.append(items[choice - 1])
+        
         # Remove the items
-        del items[item_choice - 1]
+        for choice in item_choice_values:
+            items.remove(choice)
         
         # Variable to hold the text of the updated collection
         collection_text = ''

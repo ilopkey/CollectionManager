@@ -32,13 +32,17 @@ add_item = {
     
 view_collection = {
     'collection_entry': '\nPlease select the collection you want to view.\n',
-    'view_collection': '\nViewing: '
+    'view_collection': '\nViewing: %s',
+    'no_items': 'There are no items currently in %s.'
     }
     
 remove_item = {
     'collection_entry': '\nPlease select the collection you want to remove from.\n',
     'view_collection': 'Do you want to view %s? Y/n: ',
-    'item_entry': 'Please enter the POS of the item you want to remove: ',
+    'item_entry': 'Please enter the POS of the items you want to remove.\nEnter FINISH/finish to confirm selection.\n',
+    'pos_entry': 'Enter POS: ',
+    'finish_entry': 'finish',
+    'confirm_entry': 'Selection Confirmed.\n',
     'confirmation': 'Item has been removed from %s.\n'
     }
 
