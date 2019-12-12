@@ -218,7 +218,7 @@ while exit == 0:
         collection_path = collection_name + '.txt'
         
         # Check if the new collection already exists
-        if os.path.exists(collection_path):
+        if os.path.exists(collection_path) or collection_path == collection_list_path:
             print(error_text['already_exists'])
             continue
         
@@ -377,7 +377,7 @@ while exit == 0:
         # Ask if user wants to view the collection before selecting
         # the item
         view = input(remove_item['view_collection'] % collection_path)
-        if view == 'Y' or view == 'y':
+        if view.lower() == 'y':
             print_items(collection_path)
         
         # Get the list of items
@@ -444,6 +444,92 @@ while exit == 0:
         collection.close()
         
         print(remove_item['confirmation'] % collection_path[:len(collection_path)-4])
+    
+    # Remove a collection
+    elif option == 5:
+        #print('IN PROGRESS')
+        #continue
+        # Get collection to remove
+        
+        # Get a list of all collection paths, then print out and ask
+        # user to select the collection they want to remove
+        list = view_collections()
+        if len(list) == 0:
+            print(error_text['no_collections'])
+            continue
+        print(remove_collection['collection_entry'])
+        print_collections(list)
+        
+        # Get the collection to remove from the user.
+        collection_choice = int_choice_input(list)
+        
+        
+        choice = list[collection_choice-1]
+        choice_path = choice[:len(choice)-1]
+        choice_name = choice[:len(choice)-5]
+        
+        
+        print(choice + ' ' + choice_path + ' ' + choice_name)
+        
+        # Get confirmation of removal
+        confirm = input(remove_collection['confirm_removal'] % choice_name)
+        
+        # If confirmed then attempt to remove the file
+        if confirm.lower() == 'y':
+            
+            # Remove the File
+            os.remove(choice_path)
+            
+            # Check if the file has been removed
+            if os.path.exists(choice_path):
+                
+                # If the file has not been removed for some reason
+                # then don't remove the collection from the list
+                print(remove_collection['not_removed'] % choice_name)
+                
+                # Otherwise begin removing from the list
+            else:
+                print(remove_collection['removed'] % choice_name)
+                
+                # Remove the collection from collection_list.txt
+                
+                # Get all the collection lines from collection_list.txt in a list
+                list = view_collections()
+                print(list)
+                
+                # Remove the collection path from this list
+                list.remove(choice)
+                
+                # Set the variable to use for writing the collection_id
+                collection_id = 0
+                str_id = ''
+                
+                # Open collection_list.txt to begin writing to
+                collections = open(collection_list_path, 'w')
+                
+                # Now create the collection information to write
+                # to collection_list.txt
+                for collection_path in list:
+                    
+                    # Create a collection_id of format @C0000
+                    str_id = str(collection_id)
+                    while len(str_id) < 4:
+                        str_id = '0' + str_id
+                    str_id = '@C' + str_id
+                    
+                    # Increment the collection_id
+                    collection_id += 1
+                    
+                    # Write the collection info lines 
+                    collections.write(str_id + '\n' + collection_path + '\n')
+                
+                # Close collection_list.txt
+                collections.close()
+            
+        else:
+            print(remove_collection['not_removed'] % choice_name)
+        
+        
         
     else:
         print(error_text['invalid'])
